@@ -15,57 +15,69 @@ userGID = []
 
 # Loop the amount of Jailed Users you want
 for i in range(41):
-	userList.append("user00" + str(i))
+	userList.append("user" + str(i))
+	os.system("sudo useradd " + userList[i])
 
 for j in range(0, len(userList)):
-	subprocess.Popen(["mkdir", "-p", "/home/" + userList[j]])
-	subprocess.Popen(["mkdir", "-p", "/home/" + userList[j] + "/dev"])
-	subprocess.Popen(["mkdir", "-p", "/home/" + userList[j] + "/bin"])
-	subprocess.Popen(["mkdir", "-p", "/home/" + userList[j] + "/lib/x86_64-linux-gnu"])
-	subprocess.Popen(["mkdir", "-p", "/home/" + userList[j] + "/lib64/ld-linux-x86-64.so.2"])
-	subprocess.Popen(["mkdir", "-p", "/home/" + userList[j] + "/etc/"])
-	subprocess.Popen(["mkdir", "-p", "/home/" + userList[j] + "/home/" + userList[j]])
+	subprocess.Popen(["mkdir", "-p", "/home/jail"])
+	subprocess.Popen(["mkdir", "-p", "/home/jail/dev"])
+	subprocess.Popen(["mkdir", "-p", "/home/jail/bin"])
+	subprocess.Popen(["mkdir", "-p", "/home/jail/lib/x86_64-linux-gnu"])
+	subprocess.Popen(["mkdir", "-p", "/home/jail/lib64"])
+	subprocess.Popen(["mkdir", "-p", "/home/jail/etc/"])
+	subprocess.Popen(["mkdir", "-p", "/home/jail/usr/lib/x86_64-linux-gnu/"])
+	subprocess.Popen(["mkdir", "-p", "/home/jail/usr/bin/"])
+	subprocess.Popen(["mkdir", "-p", "/home/jail/home/" + userList[j]])
 
 for k in range(0, len(userList)):
-	userUID = pwd.getpwnam(userList[i]).pw_uid
-	userGID = grp.getgrnam(userList[i]).gr_gid
-	os.chown("/home/" + userList[k], uid, gid)
-	os.chmod("/home/" + userList[k], 755)
-	os.chown("/home/" + userList[k] + "/home/", userUID, userGID)
-	os.chown("/home/" + userList[k] + "/home/" + userList[j], userUID, userGID)
-	os.chmod("/home/" + userList[j] + "/home", 700)
-	os.chmod("/home/" + userList[j] + "/home/" + userList[j], 700)
-	os.chdir("/home/" + userList[k] + "/dev")
+	userUID = pwd.getpwnam(userList[k]).pw_uid
+	userGID = grp.getgrnam(userList[k]).gr_gid
+	os.chown("/home/jail", uid, gid)
+	os.chmod("/home/jail", 0755)
+	os.chown("/home/jail/home/", uid, gid)
+	os.chown("/home/jail/home/" + userList[k], userUID, userGID)
+	os.chmod("/home/jail/home/" + userList[k], 0700)
+	os.chdir("/home/jail/dev")
 	subprocess.Popen(["mknod", "-m", "666", "null", "c", "1", "3"])
 	subprocess.Popen(["mknod", "-m", "666", "tty", "c", "5", "0"])
 	subprocess.Popen(["mknod", "-m", "666", "zero", "c", "1", "5"])
 	subprocess.Popen(["mknod", "-m", "666", "random", "c", "1", "8"])
-	os.chdir("/home/" + userList[k] + "/bin")
-	shutil.copy2("/bin/bash", "/home/" + userList[k] + "/bin/")
-	shutil.copy2("/bin/ls", "/home/" + userList[k] + "/bin/")
-	shutil.copy2("/bin/date", "/home/" + userList[k] + "/bin/")
-	shutil.copy2("/bin/mkdir", "/home/" + userList[k] + "/bin/")
-	shutil.copy2("/lib/x86_64-linux-gnu/libtinfo.so.5", "/home/" + userList[k] + "/lib/x86_64-linux-gnu")
-	shutil.copy2("/lib/x86_64-linux-gnu/libdl.so.2", "/home/" + userList[k] + "/lib/x86_64-linux-gnu/")
-	shutil.copy2("/lib/x86_64-linux-gnu/libc.so.6", "/home/" + userList[k] + "/lib/x86_64-linux-gnu/")
-	shutil.copy2("/lib64/ld-linux-x86-64.so.2", "/home/" + userList[k] + "/lib64/")
-	shutil.copy2("/lib/x86_64-linux-gnu/libselinux.so.1", "/home/" + userList[k] + "/lib/x86_64-linux-gnu/")
-	shutil.copy2("/lib/x86_64-linux-gnu/libpcre.so.3", "/home/" + userList[k] + "/lib/x86_64-linux-gnu/")
-	shutil.copy2("/lib/x86_64-linux-gnu/libpthread.so.0", "/home/" + userList[k] + "/lib/x86_64-linux-gnu/")
-	shutil.copy2("/etc/{passwd,group}", "/home/" + userList[k] + "/etc/")
+	os.chdir("/home/jail/bin")
+	shutil.copy2("/bin/sh", "/home/jail/bin/")
+	shutil.copy2("/bin/bash", "/home/jail/bin/")
+	shutil.copy2("/bin/ls", "/home/jail/bin/")
+	shutil.copy2("/bin/date", "/home/jail/bin/")
+	shutil.copy2("/bin/mkdir", "/home/jail/bin/")
+	shutil.copy2("/bin/nano", "/home/jail/bin/")
+	shutil.copy2("/usr/bin/vi", "/home/jail/usr/bin/")
+	shutil.copy2("/usr/bin/vim", "/home/jail/usr/bin/")
+	shutil.copy2("/lib/x86_64-linux-gnu/libtinfo.so.5", "/home/jail/lib/x86_64-linux-gnu")
+	shutil.copy2("/lib/x86_64-linux-gnu/libdl.so.2", "/home/jail/lib/x86_64-linux-gnu/")
+	shutil.copy2("/lib/x86_64-linux-gnu/libc.so.6", "/home/jail/lib/x86_64-linux-gnu/")
+	shutil.copy2("/lib64/ld-linux-x86-64.so.2", "/home/jail/lib64/")
+	shutil.copy2("/lib/x86_64-linux-gnu/libselinux.so.1", "/home/jail/lib/x86_64-linux-gnu/")
+	shutil.copy2("/lib/x86_64-linux-gnu/libpcre.so.3", "/home/jail/lib/x86_64-linux-gnu/")
+	shutil.copy2("/lib/x86_64-linux-gnu/libpthread.so.0", "/home/jail/lib/x86_64-linux-gnu/")
+	shutil.copy2("/lib/x86_64-linux-gnu/libm.so.6", "/home/jail/lib/x86_64-linux-gnu/")
+	shutil.copy2("/lib/x86_64-linux-gnu/libacl.so.1", "/home/jail/lib/x86_64-linux-gnu/")
+	shutil.copy2("/usr/lib/x86_64-linux-gnu/libgpm.so.2", "/home/jail/usr/lib/x86_64-linux-gnu/")
+	shutil.copy2("/usr/lib/x86_64-linux-gnu/libpython3.5m.so.1.0", "/home/jail/usr/lib/x86_64-linux-gnu/")
+	shutil.copy2("/lib/x86_64-linux-gnu/libattr.so.1", "/home/jail/lib/x86_64-linux-gnu/")
+	shutil.copy2("/lib/x86_64-linux-gnu/libexpat.so.1", "/home/jail/lib/x86_64-linux-gnu/")
+	shutil.copy2("/lib/x86_64-linux-gnu/libz.so.1", "/home/jail/lib/x86_64-linux-gnu/")
+	shutil.copy2("/lib/x86_64-linux-gnu/libutil.so.1", "/home/jail/lib/x86_64-linux-gnu/")
+	shutil.copy2("/lib/x86_64-linux-gnu/libncursesw.so.5", "/home/jail/lib/x86_64-linux-gnu/")
+	shutil.copy2("/etc/passwd", "/home/jail/etc/")
+	shutil.copy2("/etc/group", "/home/jail/etc/")
 	with open("/etc/ssh/sshd_config", "a") as myfile:
 		if(k > 0):
-			myfile.write("Match User " + userList[k])
+			myfile.write("Match User " + userList[k] + "\n")
 		else:
-			myfile.write("#Define Usernames to add to Chroot Jails")
-			myfile.write("Match User " + userList[k])
+			myfile.write("#Define Usernames to add to Chroot Jails\n")
+			myfile.write("Match User " + userList[k] + "\n")
 
-for l in range(0, len(userList)):
-	with open("/etc/ssh/sshd_config", "a") as addChrootDir:
-		if(l > 0):
-			addChrootDir.write("ChrootDirectory /home/" + userList[l])
-		else:
-			addChrootDir.write("#Specify Chroot Jail Locations")
-			addChrootDir.write("ChrootDirectory /home/" + userList[l])
+with open("/etc/ssh/sshd_config", "a") as addChrootDir:
+	addChrootDir.write("\n#Specify Chroot Jail Location\n")
+	addChrootDir.write("ChrootDirectory /home/jail\n")
 
 
